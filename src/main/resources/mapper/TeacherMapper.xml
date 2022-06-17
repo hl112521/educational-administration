@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Student 学生信息表-->
+<mapper namespace="com.zijin.educationaladministration.dao.TeacherDao">
+    <resultMap id="TeacherDao" type="com.zijin.educationaladministration.domain.Teacher">
+        <result column="id" javaType="String" jdbcType="VARCHAR" property="id"/>
+        <result column="name" javaType="String" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" javaType="String" jdbcType="VARCHAR" property="sex"/>
+        <result column="birthday" javaType="Date" jdbcType="DATE" property="birthday"/>
+        <result column="title" javaType="String" jdbcType="VARCHAR" property="title"/>
+        <result column="phone" javaType="String" jdbcType="VARCHAR" property="phone"/>
+        <result column="college" javaType="String" jdbcType="VARCHAR" property="college"/>
+    </resultMap>
+    <select id="findInstructorList" resultType="com.zijin.educationaladministration.domain.Teacher">
+        select * from teacher where college = #{college}
+    </select>
+
+    <!--通过id获取用户信息-->
+    <select id="getUserTeacher" resultType="com.zijin.educationaladministration.domain.Teacher">
+        select * from teacher where id = #{id}
+    </select>
+
+    <update id="updateBirthday">
+        UPDATE teacher SET birthday = birthday + 1 WHERE id = #{id}
+    </update>
+
+    <select id="getUserByCollege" resultType="com.zijin.educationaladministration.domain.Teacher">
+        select * from teacher where college = #{college}
+    </select>
+
+
+
+
+</mapper>

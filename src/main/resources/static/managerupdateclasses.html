@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>
+        班级信息
+    </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="css/main.css" media="all">
+    <script type="text/javascript" src="lib/loading/okLoading.js"></script>
+    <!--导入ElementUI样式列表，css样式一般都在页面头部-->
+    <link rel="stylesheet" href="/css/index.css">
+
+
+</head>
+<style>
+    .imgs {
+        display: none;
+    }
+
+    .picture {
+        display: none;
+    }
+</style>
+<body>
+<div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>班级管理</cite></a>
+              <a><cite>修改班级信息</cite></a>
+            </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon"
+                                                                        style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body" id="app">
+    <el-form :model="classes" :rules="rules" ref="classesFormRef" label-width="120px" class="demo-ruleForm">
+        <el-form-item label="班级号" prop="id">
+            <el-input v-model="classes.id"></el-input>
+        </el-form-item>
+        <el-form-item label="学院" prop="college">
+            <el-select v-model="classes.college" placeholder="请选择学院"  style="width: 100%;"  @change="collegeChange()">
+                <el-option
+                        v-for="item in collegeList"
+                        :key="item.name"
+                        :value="item.name">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="专业" prop="major">
+            <el-select v-model="classes.major" placeholder="请选择班级"  style="width: 100%;"  @change="majorChange()">
+                <el-option
+                        v-for="item in majorList"
+                        :key="item.name"
+                        :value="item.name">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="班级名称" prop="name">
+            <el-input v-model="classes.name"></el-input>
+        </el-form-item>
+        <el-form-item label="年级" prop="grade">
+            <el-input v-model="classes.grade"></el-input>
+        </el-form-item>
+        <el-form-item label="辅导员" prop="instructor">
+            <el-select v-model="classes.instructor" placeholder="请选择辅导员"  style="width: 100%;">
+                <el-option
+                        v-for="item in instructorList"
+                        :key="item.name"
+                        :value="item.name">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="saveOne()" style="text-align: center">保存</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+<script src="lib/layui/layui.js" charset="utf-8"></script>
+<script src="js/x-layui.js" charset="utf-8"></script>
+<!--js脚本一般是放在页面尾部-->
+<!--Vue js脚本-->
+<script src="/js/vue.js" charset="utf-8"></script>
+<!--引入ElementUI组件库-->
+<script src="/js/index.js" charset="utf-8"></script>
+<!--引入Axios js脚本-->
+<script src="/js/axios.js" charset="utf-8"></script>
+<!--引入时间插件包Momentjs-->
+<script src="/js/moment.min.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+    var app = new Vue({
+        el: "#app",
+        data: {
+            title: "添加专业",
+            classes: {name:""},
+            nameL:"",
+            collegeL:"",
+            fileList: [],
+            collegeList:[],
+            majorList:[],
+            instructorList:[],
+            rules: {
+                id: [
+                    {required: true, message: '请输入班级号', trigger: 'blur'}
+                ],
+                college: [
+                    {required: true, message: '请选择班级', trigger: 'blur'}
+                ],
+                major: [
+                    {required: true, message: '请选择专业', trigger: 'blur'}
+                ],
+                name: [
+                    {required: true, message: '请输入班级名称', trigger: 'blur'}
+                ],
+                grade: [
+                    {required: true, message: '请输入年级', trigger: 'blur'}
+                ],
+                instructor: [
+                    {required: true, message: '请选择辅导员', trigger: 'blur'}
+                ]
+            }
+        },
+        methods: {
+            dateFormat(date,format){
+                //默认格式化字符串"YYYY-MM-DD"
+                if(format == null || format == ''){
+                    format = "YYYY-MM-DD";
+                }
+                return moment(date).format(format);
+            },
+            setCookie(name,value){
+                var Days = 30;
+                var exp = new Date();
+                exp.setTime(exp.getTime() + Days*24*60*60*1000);
+                document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+            },
+            getCookie(name)
+            {
+                var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+                if(arr=document.cookie.match(reg))
+                    return unescape(arr[2]);
+                else
+                    return null;
+            },
+            collegeChange() {
+                axios.get("/getMajorByCollege?college=" + this.classes.college).then((res) => {
+                    this.majorList = res.data;
+                });
+                axios.get("/getInstructor?college=" + this.classes.college).then((res) => {
+                    this.instructorList = res.data;
+                });
+                this.classes.major = "";
+                this.classes.classes = "";
+                this.classes.instructor = "";
+                this.classes.grade = "";
+                this.changeFlag();
+            },
+            majorChange() {
+                axios.get("/getInstructor?college=" + this.classes.college).then((res) => {
+                    this.instructorList = res.data;
+                });
+                this.classes.classes = "";
+                this.classes.instructor = "";
+                this.classes.grade = "";
+            },
+            findById() {
+                axios.get("/getCollege").then((res) => {
+                    this.collegeList = res.data;
+                });
+
+                this.classes.name = this.getCookie("classesname");
+                axios.get("/findByNameclasses?name=" + this.classes.name).then((res) => {
+                    this.classes = res.data.data;
+                    this.nameL = this.classes.name
+                    this.collegeL = this.classes.college
+                    axios.get("/getMajorByCollege?college=" + this.collegeL).then((res) => {
+                        this.majorList = res.data;
+                    });
+                    axios.get("/getInstructor?college=" + this.collegeL).then((res) => {
+                        this.instructorList = res.data;
+                    });
+                });
+
+
+            },
+            //表达重置
+            saveOne() {
+                var method = "update";
+                axios.post("/updateclasses?nameL=" + this.nameL, this.classes).then((res) => {
+                    if (res.data.flag) {
+                        this.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        });
+                        this.setCookie("classesname", this.classes.name)
+                        this.findById();
+                    }
+                });
+
+            },
+            // 从当前url地址获取请求参数 classesadd?id=1
+            getQueryString(name) {
+                let reg = `(^|&)${name}=([^&]*)(&|$)`
+                let r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            }
+        },
+        created: function () {
+            layui.use(['element', 'layer', 'form'], function () {
+                $ = layui.jquery;//jquery
+                lement = layui.element();//面包导航
+                layer = layui.layer;//弹出层
+                form = layui.form();
+                okLoading.close($);
+            });
+            this.findById();
+        }
+    });
+</script>
+
+</body>
+</html>

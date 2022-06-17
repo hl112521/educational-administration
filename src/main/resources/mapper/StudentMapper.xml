@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Student 学生信息表-->
+<mapper namespace="com.zijin.educationaladministration.dao.StudentDao">
+    <resultMap id="StudentDao" type="com.zijin.educationaladministration.domain.Student">
+        <result column="id" javaType="String" jdbcType="VARCHAR" property="id"/>
+        <result column="name" javaType="String" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" javaType="String" jdbcType="VARCHAR" property="sex"/>
+        <result column="birthday" javaType="Date" jdbcType="DATE" property="birthday"/>
+        <result column="classes" javaType="String" jdbcType="VARCHAR" property="classes"/>
+        <result column="major" javaType="String" jdbcType="VARCHAR" property="major"/>
+        <result column="grade" javaType="String" jdbcType="VARCHAR" property="grade"/>
+        <result column="phone" javaType="String" jdbcType="VARCHAR" property="phone"/>
+        <result column="college" javaType="String" jdbcType="VARCHAR" property="college"/>
+        <result column="instructor" javaType="String" jdbcType="VARCHAR" property="instructor"/>
+    </resultMap>
+    <!--通过id获取用户信息-->
+    <select id="getUser" resultType="com.zijin.educationaladministration.domain.Student">
+        select * from student where id = #{id}
+    </select>
+    <update id="updateBirthday">
+        UPDATE student SET birthday = birthday + 1 WHERE id = #{id}
+    </update>
+
+    <select id="findClassesListName" resultType="com.zijin.educationaladministration.domain.Student">
+        select distinct classes from student where instructor = #{instructor}
+    </select>
+    <select id="getUserByCollege" resultType="com.zijin.educationaladministration.domain.Student">
+        select * from student where college = #{college}
+    </select>
+    <select id="getUserByClasses" resultType="com.zijin.educationaladministration.domain.Student">
+        select * from student where classes = #{classes}
+    </select>
+
+
+
+</mapper>

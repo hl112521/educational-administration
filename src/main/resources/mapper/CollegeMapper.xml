@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--author Account 用户账号表-->
+<mapper namespace="com.zijin.educationaladministration.dao.CollegeDao">
+    <resultMap id="CollegeDao" type="com.zijin.educationaladministration.domain.College">
+        <result column="id" javaType="String" jdbcType="VARCHAR" property="id"/>
+        <result column="name" javaType="String" jdbcType="VARCHAR" property="name"/>
+        <result column="dean" javaType="String" jdbcType="VARCHAR" property="dean"/>
+    </resultMap>
+    <!--通过用户名和密码从表中获得用户-->
+    <select id="findCollegeDean" resultType="com.zijin.educationaladministration.domain.College">
+        select * from college where dean = #{name}
+    </select>
+
+    <update id="updateByName">
+        update college
+        set id = #{id}, name = #{name}, dean=#{dean}
+        where name = #{nameL}
+    </update>
+
+
+
+
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Major 专业表-->
+<mapper namespace="com.zijin.educationaladministration.dao.MajorDao">
+    <resultMap id="MajorDao" type="com.zijin.educationaladministration.domain.Major">
+        <result column="id" javaType="String" jdbcType="VARCHAR" property="id"/>
+        <result column="name" javaType="String" jdbcType="VARCHAR" property="name"/>
+        <result column="college" javaType="String" jdbcType="VARCHAR" property="college"/>
+    </resultMap>
+    <!--通过用户名和密码从表中获得用户-->
+    <select id="getMajorByCollege" resultType="com.zijin.educationaladministration.domain.Major">
+        select * from major where college = #{college}
+    </select>
+
+    <select id="findByName" resultType="com.zijin.educationaladministration.domain.Major">
+        select * from major where name = #{name}
+    </select>
+
+    <update id="updateByName">
+        update major
+        set id = #{id}, name = #{name}, college=#{college}
+        where name = #{nameL}
+    </update>
+
+    <delete id="deleteByName">
+        delete from major where name = #{name}
+    </delete>
+
+
+</mapper>

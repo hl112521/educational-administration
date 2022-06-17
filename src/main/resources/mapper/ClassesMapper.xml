@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Student 学生信息表-->
+<mapper namespace="com.zijin.educationaladministration.dao.ClassesDao">
+    <resultMap id="ClassesDao" type="com.zijin.educationaladministration.domain.Classes">
+        <result column="id" javaType="String" jdbcType="VARCHAR" property="id"/>
+        <result column="name" javaType="String" jdbcType="VARCHAR" property="name"/>
+        <result column="grade" javaType="String" jdbcType="VARCHAR" property="grade"/>
+        <result column="instructor" javaType="String" jdbcType="VARCHAR" property="instructor"/>
+        <result column="college" javaType="String" jdbcType="VARCHAR" property="college"/>
+        <result column="major" javaType="String" jdbcType="VARCHAR" property="major"/>
+    </resultMap>
+    <!--通过id获取用户信息-->
+    <select id="findClassesList" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where major = #{major}
+    </select>
+
+    <select id="getClassesByCollege" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where college = #{college}
+    </select>
+
+    <select id="getClassesByCollegeANDMajor" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where college = #{college} and major = #{major}
+    </select>
+
+    <select id="getInstructorByClaases" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where name = #{classes}
+    </select>
+
+    <select id="findClassesInstructor" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where instructor = #{name}
+    </select>
+
+    <select id="getClassesByMajor" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where major = #{major}
+    </select>
+
+    <update id="updateByName">
+        update classes
+        set id = #{id}, name = #{name}, grade=#{grade}, instructor=#{instructor}, college=#{college}, major=#{major}
+        where name = #{nameL}
+    </update>
+
+    <select id="findByName" resultType="com.zijin.educationaladministration.domain.Classes">
+        select * from classes where name = #{name}
+    </select>
+
+    <delete id="deleteByName">
+        delete from classes where name = #{name}
+    </delete>
+</mapper>

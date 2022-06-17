@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--author Account 用户账号表-->
+<mapper namespace="com.zijin.educationaladministration.dao.AccountDao">
+    <resultMap id="AccountDao" type="com.zijin.educationaladministration.domain.Account">
+        <result column="account" javaType="String" jdbcType="VARCHAR" property="account"/>
+        <result column="password" javaType="String" jdbcType="VARCHAR" property="password"/>
+        <result column="role" javaType="String" jdbcType="VARCHAR" property="role"/>
+    </resultMap>
+    <!--通过用户名和密码从表中获得用户-->
+    <select id="login" resultType="com.zijin.educationaladministration.domain.Account">
+        select * from account where account = #{account} and password = #{password}
+    </select>
+
+    <!--通过用户账户获得用户角色-->
+    <select id="getUserRoleByAccount" resultType="String">
+        select role from account where account = #{account}
+    </select>
+
+
+</mapper>

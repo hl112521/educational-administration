@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>
+        学生信息
+    </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="css/main.css" media="all">
+    <script type="text/javascript" src="lib/loading/okLoading.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <!--导入ElementUI样式列表，css样式一般都在页面头部-->
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+<div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>学生管理</cite></a>
+              <a><cite>学生信息</cite></a>
+            </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body" id="app">
+    <div>
+        <span class="demonstration">姓名 </span>
+        <el-input v-model="searchMap.name" style="width: 20%" placeholder="请输入需要查找的姓名"></el-input>
+        <span class="demonstration" style="padding-left: 2%">学院 </span>
+        <el-select v-model="collegeL" placeholder="请选择学院"  style="width: 10%" @change="collegeChange()">
+            <el-option label="全部" value="全部"></el-option>
+            <el-option
+                    v-for="item in collegeList"
+                    :key="item.name"
+                    :value="item.name">
+            </el-option>
+        </el-select>
+        <span class="demonstration" style="padding-left: 2%">专业 </span>
+        <el-select v-model="majorL" placeholder="请选择专业"  style="width: 10%" @change="majorChange()">
+            <el-option label="全部" value="全部"></el-option>
+            <el-option
+                    v-for="item in majorList"
+                    :key="item.name"
+                    :value="item.name">
+            </el-option>
+        </el-select>
+        <span class="demonstration" style="padding-left: 2%">班级 </span>
+        <el-select v-model="classesL" placeholder="请选择班级"  style="width: 10%" @change="classesChange()">
+            <el-option label="全部" value="全部"></el-option>
+            <el-option
+                    v-for="item in classesList"
+                    :key="item.name"
+                    :value="item.name">
+            </el-option>
+        </el-select>
+        <el-button type="primary" plain @click="searchMap.pageNum=1;search()"  style="margin-left: 1%">搜索</el-button>
+        <el-button type="success" plain @click="cleanForm()">重置</el-button>
+    </div>
+    <xblock>
+        <span class="x-right" style="line-height:40px">共有数据：<span class="layui-badge">{{total}}</span> 条</span>
+    </xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="allChecked" :checked="selectIds.length===studentList.length" @click="allChecked">
+            </th>
+            <th>
+                学号
+            </th>
+            <th>
+                姓名
+            </th>
+            <th>
+                性别
+            </th>
+            <th>
+                出生日期
+            </th>
+            <th>
+                班级
+            </th>
+            <th>
+                专业
+            </th>
+            <th>
+                年级
+            </th>
+            <th>
+                联系电话
+            </th>
+            <th>
+                学院
+            </th>
+            <th>
+                辅导员
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody id="x-img">
+        <tr v-for="(student,index) in studentList">
+            <td>
+                <input type="checkbox" class="check_box" :id="'id'+student.id" :value="student.id" v-model="selectIds">
+            </td>
+            <td>{{student.id}}</td>
+            <td>{{student.name}}</td>
+            <td>{{student.sex}}</td>
+            <td>{{dateFormat(student.birthday)}}</td>
+            <td>{{student.classes}}</td>
+            <td>{{student.major}}</td>
+            <td>{{student.grade}}</td>
+            <td>{{student.phone}}</td>
+            <td>{{student.college}}</td>
+            <td>{{student.instructor}}</td>
+            <td class="td-manage">
+                <a title="编辑" href="javascript:;" @click="student_edit('编辑','managerupdatestudent.html',student.id,student.college,'1000','600')"
+                   class="ml-5" style="text-decoration:none">
+                    <i class="layui-icon">&#xe642;</i>
+                </a>
+                <a title="删除" href="javascript:;" @click="admin_del(student.id)"
+                   style="text-decoration:none">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :page-size="searchMap.pageSize"
+            layout="prev, pager, next,sizes"
+            :page-sizes="[5,10,12]"
+            style="text-align: right;"
+            :total="total">
+    </el-pagination>
+</div>
+<script src="lib/layui/layui.js" charset="utf-8"></script>
+<script src="js/x-layui.js" charset="utf-8"></script>
+<!--js脚本一般是放在页面尾部-->
+<!--Vue js脚本-->
+<script src="/js/vue.js" charset="utf-8"></script>
+<!--引入ElementUI组件库-->
+<script src="/js/index.js" charset="utf-8"></script>
+<!--引入Axios js脚本-->
+<script src="/js/axios.js" charset="utf-8"></script>
+<!--引入时间插件包Momentjs-->
+<script src="/js/moment.min.js" charset="utf-8"></script>
+<script>
+    var app = new Vue({
+        el:"#app", //声明Vue作用域,在html页面上要声明Vue的作用域<div class="x-body" id="app">
+        data:{
+            studentList:[],
+            selectIds: [],
+            classesList:[],
+            collegeList:[],
+            majorList:[],
+            nameTeacher:"",
+            classesL: "全部",
+            collegeL: "全部",
+            majorL: "全部",
+            total:10,
+            searchMap:{"name":"","college": [],"major": [],"classes": [],"pageNum":1,"pageSize":5},
+            selectDate:['','']
+        },
+        methods:{
+            admin_del(id) {
+                this.$confirm('是否删除该学生?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.get("/delStudent?id=" + id).then((res) => {
+                        // 删除重新加载页面数据
+                        if (res.data.flag) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                            app.searchMap.pageNum = 1;
+                            app.search();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            setCookie(name,value){
+                var Days = 30;
+                var exp = new Date();
+                exp.setTime(exp.getTime() + Days*24*60*60*1000);
+                document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+            },
+            getCookie(name)
+            {
+                var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+                if(arr=document.cookie.match(reg))
+                    return unescape(arr[2]);
+                else
+                    return null;
+            },
+            // 全选全不选方法
+            allChecked: function () {
+                if (this.selectIds.length === this.studentList.length) {
+                    // 全不选
+                    this.selectIds = [];
+                } else {
+                    this.selectIds = [];
+                    // 全选
+                    this.studentList.forEach(  (item) =>{
+                        this.selectIds.push(item.id); // 与checkbox的value统一
+                    })
+                }
+            },
+            collegeChange() {
+                if (this.collegeL == "全部"){
+                    this.findList();
+                } else {
+                    axios.get("/getMajorByCollege?college=" + this.collegeL).then((res) => {
+                        this.majorList = res.data;
+                    });
+                    axios.get("/getClassesByCollege?college=" + this.collegeL).then((res) => {
+                        this.classesList = res.data;
+                    });
+                }
+                this.majorL = "全部";
+                this.classesL = "全部";
+                this.setValue();
+            },
+            majorChange() {
+                if (this.majorL == "全部"){
+                    if (this.collegeL == "全部") {
+                        axios.get("/getClassesList").then((res) => {
+                            this.classesList = res.data;
+                        });
+                    } else {
+                        axios.get("/getClassesByCollege?college=" + this.collegeL).then((res) => {
+                            this.classesList = res.data;
+                        });
+                    }
+                } else {
+                    if (this.collegeL == "全部") {
+                        axios.get("/getClasses?major=" + this.majorL).then((res) => {
+                            this.classesList = res.data;
+                        });
+                    } else {
+                        axios.get("/getClassesByCollegeANDMajor?college=" + this.collegeL + "&major=" + this.majorL).then((res) => {
+                            this.classesList = res.data;
+                        });
+                    }
+                }
+                this.classesL = "全部";
+                this.setValue();
+            },
+            classesChange() {
+                // this.setCookie("collegeList", this.collegeL);
+                this.setValue();
+            },
+            setValue(){
+                console.log(this.classesL)
+                this.searchMap.classes = this.classesL;
+                this.searchMap.college = this.collegeL;
+                this.searchMap.major = this.majorL;
+            },
+            findList() {
+                axios.get("/getMajor").then((res) => {
+                    this.majorList = res.data;
+                });
+                axios.get("/getClassesList").then((res) => {
+                    this.classesList = res.data;
+                });
+                axios.get("/getCollege").then((res) => {
+                    this.collegeList = res.data;
+                });
+                this.setValue();
+            },
+            search(){
+                // ajax异步请求,不需要刷新页面就可以动态刷新页面数据
+                axios.post("/searchStudentManage",this.searchMap).then((res)=>{
+                    app.studentList = res.data.data;
+                    app.total = res.data.total;
+                });
+            },
+            //handleSizeChange每页数量发生变化后触发的方法
+            handleSizeChange(pageSize){
+                this.searchMap.pageSize = pageSize;
+                this.search();
+            },
+            //handleCurrentChange页码变化触发方法
+            handleCurrentChange(pageNum){
+                this.searchMap.pageNum = pageNum;
+                this.search();
+            },
+
+            //日期格式化方法
+            //date 要进行格式的日期 ；format 格式化的样式
+            dateFormat(date,format){
+                if (date == '' || date == null){
+                    return "";
+                }
+                //默认格式化字符串"YYYY-MM-DD"
+                if(format == null || format == ''){
+                    format = "YYYY-MM-DD";
+                }
+                return moment(date).format(format);
+            },
+            /*---------------下面都是LayUI方法-----------------------*/
+            //编辑
+            student_edit (title,url,id,college,w,h) {
+                this.setCookie("college", college);
+                this.setCookie("stuid", id);
+                x_admin_show(title,url,w,h);
+            },
+            /*弹出层*/
+            /*
+                参数解释：
+                title	标题
+                url		请求的url
+                id		需要操作的数据id
+                w		弹出层宽度（缺省调默认值）
+                h		弹出层高度（缺省调默认值）
+            */
+            x_admin_show(title,url,w,h){
+                if (title == null || title == '') {
+                    title=false;
+                };
+                if (url == null || url == '') {
+                    url="404.html";
+                };
+                if (w == null || w == '') {
+                    w=800;
+                };
+                if (h == null || h == '') {
+                    h=($(window).height() - 50);
+                };
+                layer.open({
+                    type: 2,
+                    area: [w+'px', h +'px'],
+                    fix: false, //不固定
+                    maxmin: true,
+                    shadeClose: true,
+                    shade:0.4,
+                    title: title,
+                    content: url
+                });
+            },
+
+            cleanForm() {
+                this.searchMap.name = "";
+                this.classesL = "全部";
+                this.collegeL = "全部";
+                this.majorL = "全部";
+                this.findList();
+                this.search();
+            },
+
+            /*关闭弹出框口*/
+            x_admin_close(){
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+
+            }
+        },
+        created:function () {//Vue生命周期方法，加载页面时会执行该方法
+            layui.use(['laydate','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+                layer = layui.layer;//弹出层
+                okLoading.close($);
+                layer.ready(function(){ //为了layer.ext.js加载完毕再执行
+                    layer.photos({
+                        photos: '#x-img'
+                    });
+                });
+            });
+            //初始页面获取小区列表信息
+
+            this.findList();
+            this.search();
+        }
+    });
+</script>
+
+</body>
+</html>
